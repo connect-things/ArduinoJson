@@ -27,6 +27,7 @@ class JsonString {
   }
 
   static const bool has_c_str = true;
+  static const bool should_copy = true;
 };
 
 template <>
@@ -45,6 +46,7 @@ class JsonString<char*> {
   }
 
   static const bool has_c_str = true;
+  static const bool should_copy = false;
 };
 
 inline JsonString<char*> makeJsonString(const char* str) {

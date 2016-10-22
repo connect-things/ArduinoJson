@@ -142,20 +142,22 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
     node_type* node = getNodeAt(makeJsonString(key));
     if (!node) {
       node = addNewNode();
-      if (!node || !setNodeKey(node, key)) return false;
+      if (!node || !setNodeKey(node, makeJsonString(key))) return false;
     }
     return setNodeValue(node, value);
   }
 
-  bool setNodeKey(node_type* node, const char* key) {
-    node->content.key = key;
+  template <typename TString>
+  typename TypeTraits::EnableIf<!JsonString<TString>::should_copy, bool>::type
+  setNodeKey(node_type* node, JsonString<TString> key) {
+    node->content.key = key.c_str();
     return true;
   }
 
   template <typename TString>
-  bool setNodeKey(node_type* node, const TString& key) {
-    // we duplicate all strings that are not char*
-    node->content.key = _buffer->strdup(key);
+  typename TypeTraits::EnableIf<JsonString<TString>::should_copy, bool>::type
+  setNodeKey(node_type* node, JsonString<TString> key) {
+    node->content.key = _buffer->strdup(key.c_str());
     return node->content.key != NULL;
   }
 
