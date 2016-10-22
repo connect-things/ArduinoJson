@@ -41,15 +41,18 @@ class JsonString<char*> {
   }
 
   bool equals(const char* expected) const {
-    return !strcmp(_str, expected);
+    return strcmp(_str, expected) == 0;
   }
 
   static const bool has_c_str = true;
 };
 
+inline JsonString<char*> makeJsonString(const char* str) {
+  return JsonString<char*>(str);
+}
+
 template <typename TString>
-JsonString<typename TypeTraits::Decay<TString>::type> makeJsonString(
-    const TString& str) {
-  return JsonString<typename TypeTraits::Decay<TString>::type>(str);
+inline JsonString<TString> makeJsonString(const TString& str) {
+  return JsonString<TString>(str);
 }
 }

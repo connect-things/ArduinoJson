@@ -67,10 +67,6 @@ class JsonObjectSubscript
     return _object.set(_key, value, decimals);
   }
 
-  FORCE_INLINE JsonVariant get() {
-    return _object.get(_key);
-  }
-
  private:
   JsonObject& _object;
   TStringRef _key;

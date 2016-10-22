@@ -174,14 +174,5 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
     node->content.value = copy;
     return true;
   }
-
-  FORCE_INLINE static bool areKeysEqual(const char* key1, const char* key2) {
-    return !strcmp(key1, key2);
-  }
-
-  template <typename TString>
-  FORCE_INLINE static bool areKeysEqual(const char* key1, const TString& key2) {
-    return !strcmp(key1, key2.c_str());
-  }
 };
 }
