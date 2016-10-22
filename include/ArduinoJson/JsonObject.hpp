@@ -12,6 +12,7 @@
 #include "Internals/List.hpp"
 #include "Internals/ReferenceType.hpp"
 #include "JsonPair.hpp"
+#include "JsonString.hpp"
 #include "TypeTraits/EnableIf.hpp"
 #include "TypeTraits/IsFloatingPoint.hpp"
 #include "TypeTraits/IsSame.hpp"
@@ -83,7 +84,7 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
   // Gets the value associated with the specified key.
   template <typename TString>
   JsonVariant get(const TString& key) const {
-    node_type* node = getNodeAt(key);
+    node_type* node = getNodeAt(makeJsonString(key));
     return node ? node->content.value : JsonVariant();
   }
 
@@ -91,7 +92,7 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
   template <typename TValue, typename TString>
   typename Internals::JsonVariantAs<TValue>::type get(
       const TString& key) const {
-    node_type* node = getNodeAt(key);
+    node_type* node = getNodeAt(makeJsonString(key));
     return node ? node->content.value.as<TValue>()
                 : JsonVariant::defaultValue<TValue>();
   }
@@ -99,7 +100,7 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
   // Checks the type of the value associated with the specified key.
   template <typename TValue, typename TString>
   bool is(const TString& key) const {
-    node_type* node = getNodeAt(key);
+    node_type* node = getNodeAt(makeJsonString(key));
     return node ? node->content.value.is<TValue>() : false;
   }
 
@@ -116,13 +117,13 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
   // Tells weither the specified key is present and associated with a value.
   template <typename TString>
   bool containsKey(const TString& key) const {
-    return getNodeAt(key) != NULL;
+    return getNodeAt(makeJsonString(key)) != NULL;
   }
 
   // Removes the specified key and the associated value.
   template <typename TString>
   void remove(const TString& key) {
-    removeNode(getNodeAt(key));
+    removeNode(getNodeAt(makeJsonString(key)));
   }
 
   // Returns a reference an invalid JsonObject.
@@ -136,16 +137,16 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
  private:
   // Returns the list node that matches the specified key.
   template <typename TString>
-  node_type* getNodeAt(const TString& key) const {
+  node_type* getNodeAt(JsonString<TString> key) const {
     for (node_type* node = _firstNode; node; node = node->next) {
-      if (areKeysEqual(node->content.key, key)) return node;
+      if (key.equals(node->content.key)) return node;
     }
     return NULL;
   }
 
   template <typename TValue, typename TString>
   bool setNodeAt(const TString& key, const TValue& value) {
-    node_type* node = getNodeAt(key);
+    node_type* node = getNodeAt(makeJsonString(key));
     if (!node) {
       node = addNewNode();
       if (!node || !setNodeKey(node, key)) return false;
