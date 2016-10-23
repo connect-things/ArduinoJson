@@ -42,7 +42,7 @@ class JsonString<char*> {
     return strcmp(_str, expected) == 0;
   }
 
-  static const bool has_c_str = true;
+  static const bool has_append = false;
   static const bool should_copy = false;
 };
 
@@ -54,6 +54,7 @@ class JsonString<const char*> : public JsonString<char*> {};
 
 template <>
 class JsonString<String> {
+ protected:
   const String* _str;
 
  public:
@@ -69,7 +70,11 @@ class JsonString<String> {
     return strcmp(_str->c_str(), expected) == 0;
   }
 
-  static const bool has_c_str = true;
+  void append(char c) {
+    *const_cast<String*>(_str) += static_cast<char>(c);
+  }
+
+  static const bool has_append = true;
   static const bool should_copy = true;
 };
 

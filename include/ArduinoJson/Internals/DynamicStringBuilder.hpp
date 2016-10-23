@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "../JsonString.hpp"
 #include "../Print.hpp"
 
 namespace ArduinoJson {
@@ -19,15 +20,14 @@ class DynamicStringBuilder : public Print {
   DynamicStringBuilder(TString &str) : _str(str) {}
 
   virtual size_t write(uint8_t c) {
-    // Need to cast to char, otherwise String will print a number (issue #120)
-    _str += static_cast<char>(c);
+    _str.append(c);
     return 1;
   }
 
  private:
   DynamicStringBuilder &operator=(const DynamicStringBuilder &);
 
-  TString &_str;
+  typename JsonString<TString>::type _str;
 };
 }
 }

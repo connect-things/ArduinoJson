@@ -9,7 +9,6 @@
 
 #include "../Configuration.hpp"
 #include "../TypeTraits/EnableIf.hpp"
-#include "../TypeTraits/IsString.hpp"
 #include "DummyPrint.hpp"
 #include "DynamicStringBuilder.hpp"
 #include "IndentedPrint.hpp"
@@ -52,8 +51,7 @@ class JsonPrintable {
   }
 
   template <typename TString>
-  typename TypeTraits::EnableIf<TypeTraits::IsString<TString>::value,
-                                size_t>::type
+  typename TypeTraits::EnableIf<JsonString<TString>::has_append, size_t>::type
   printTo(TString &str) const {
     DynamicStringBuilder<TString> sb(str);
     return printTo(sb);
@@ -75,8 +73,7 @@ class JsonPrintable {
   }
 
   template <typename TString>
-  typename TypeTraits::EnableIf<TypeTraits::IsString<TString>::value,
-                                size_t>::type
+  typename TypeTraits::EnableIf<JsonString<TString>::has_append, size_t>::type
   prettyPrintTo(TString &str) const {
     DynamicStringBuilder<TString> sb(str);
     return prettyPrintTo(sb);
