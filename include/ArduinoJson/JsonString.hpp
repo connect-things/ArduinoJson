@@ -40,19 +40,19 @@ class JsonString<char*> {
 
 template <>
 class JsonString<String> {
-  const String& _str;
+  const String* _str;
 
  public:
   typedef JsonString<String> type;
 
-  JsonString(const String& str) : _str(str) {}
+  JsonString(const String& str) : _str(&str) {}
 
   const char* c_str() const {
-    return _str.c_str();
+    return _str->c_str();
   }
 
   bool equals(const char* expected) const {
-    return _str == expected;
+    return strcmp(_str->c_str(), expected) == 0;
   }
 
   static const bool has_c_str = true;
