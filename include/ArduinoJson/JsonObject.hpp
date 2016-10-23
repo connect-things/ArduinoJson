@@ -162,14 +162,14 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
   }
 
   template <typename T>
-  typename TypeTraits::EnableIf<!TypeTraits::IsString<T>::value, bool>::type
+  typename TypeTraits::EnableIf<!JsonString<T>::should_copy, bool>::type
   setNodeValue(node_type* node, const T& value) {
     node->content.value = value;
     return true;
   }
 
   template <typename T>
-  typename TypeTraits::EnableIf<TypeTraits::IsString<T>::value, bool>::type
+  typename TypeTraits::EnableIf<JsonString<T>::should_copy, bool>::type
   setNodeValue(node_type* node, const T& value) {
     const char* copy = duplicateString(value);
     if (!copy) return false;

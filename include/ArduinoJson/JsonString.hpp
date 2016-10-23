@@ -7,15 +7,23 @@
 
 #pragma once
 
-#include "TypeTraits/Decay.hpp"
+#include "String.hpp"
 
 namespace ArduinoJson {
 
 template <typename TString>
 class JsonString {
  public:
-  typedef JsonString<typename TypeTraits::Decay<TString>::type> type;
+  // default value, even for types that are not strings
+  // this simplifies SFINAE
+  static const bool should_copy = false;
 };
+
+template <typename TString>
+class JsonString<const TString> : public JsonString<TString> {};
+
+template <typename TString>
+class JsonString<TString&> : public JsonString<TString> {};
 
 template <>
 class JsonString<char*> {
@@ -37,6 +45,12 @@ class JsonString<char*> {
   static const bool has_c_str = true;
   static const bool should_copy = false;
 };
+
+template <size_t N>
+class JsonString<char[N]> : public JsonString<char*> {};
+
+template <>
+class JsonString<const char*> : public JsonString<char*> {};
 
 template <>
 class JsonString<String> {
