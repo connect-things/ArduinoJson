@@ -19,6 +19,11 @@ struct Decay {
 };
 
 template <typename T>
+struct Decay<T*> {
+  typedef typename Decay<T>::type* type;
+};
+
+template <typename T>
 struct Decay<T[]> {
   typedef typename Decay<T>::type* type;
 };

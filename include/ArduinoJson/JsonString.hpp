@@ -13,21 +13,8 @@ namespace ArduinoJson {
 
 template <typename TString>
 class JsonString {
-  const TString& _str;
-
  public:
-  JsonString(const TString& str) : _str(str) {}
-
-  const char* c_str() const {
-    return _str.c_str();
-  }
-
-  bool equals(const char* expected) const {
-    return _str == expected;
-  }
-
-  static const bool has_c_str = true;
-  static const bool should_copy = true;
+  typedef JsonString<typename TypeTraits::Decay<TString>::type> type;
 };
 
 template <>
@@ -35,6 +22,8 @@ class JsonString<char*> {
   const char* _str;
 
  public:
+  typedef JsonString<char*> type;
+
   JsonString(const char* str) : _str(str) {}
 
   const char* c_str() const {
@@ -49,12 +38,29 @@ class JsonString<char*> {
   static const bool should_copy = false;
 };
 
-inline JsonString<char*> makeJsonString(const char* str) {
-  return JsonString<char*>(str);
-}
+template <>
+class JsonString<String> {
+  const String& _str;
+
+ public:
+  typedef JsonString<String> type;
+
+  JsonString(const String& str) : _str(str) {}
+
+  const char* c_str() const {
+    return _str.c_str();
+  }
+
+  bool equals(const char* expected) const {
+    return _str == expected;
+  }
+
+  static const bool has_c_str = true;
+  static const bool should_copy = true;
+};
 
 template <typename TString>
-inline JsonString<TString> makeJsonString(const TString& str) {
-  return JsonString<TString>(str);
+inline typename JsonString<TString>::type makeJsonString(const TString& str) {
+  return typename JsonString<TString>::type(str);
 }
 }
