@@ -15,7 +15,6 @@
 #include "Internals/JsonVariantType.hpp"
 #include "JsonVariantBase.hpp"
 #include "RawJson.hpp"
-#include "String.hpp"
 #include "TypeTraits/EnableIf.hpp"
 #include "TypeTraits/IsFloatingPoint.hpp"
 #include "TypeTraits/IsIntegral.hpp"
@@ -150,14 +149,6 @@ class JsonVariant : public JsonVariantBase<JsonVariant> {
     return static_cast<T>(asFloat());
   }
   //
-  // const String as<String>() const;
-  template <typename T>
-  const typename TypeTraits::EnableIf<TypeTraits::IsSame<T, String>::value,
-                                      T>::type
-  as() const {
-    return toString();
-  }
-  //
   // const char* as<const char*>() const;
   // const char* as<char*>() const;
   template <typename T>
@@ -166,6 +157,17 @@ class JsonVariant : public JsonVariantBase<JsonVariant> {
                                 const char *>::type
   as() const {
     return asString();
+  }
+  //
+  // std::string as<std::string>() const;
+  // String as<String>() const;
+  template <typename T>
+  typename TypeTraits::EnableIf<JsonString<T>::has_append, T>::type as() const {
+    const char *cstr = asString();
+    if (cstr) return T(cstr);
+    T s;
+    printTo(s);
+    return s;
   }
   //
   // const bool as<bool>() const
@@ -322,7 +324,6 @@ class JsonVariant : public JsonVariantBase<JsonVariant> {
   JsonVariant(T value, typename TypeTraits::EnableIf<
                            TypeTraits::IsSame<T, char>::value>::type * = 0);
 
-  String toString() const;
   Internals::JsonFloat asFloat() const;
   Internals::JsonInteger asInteger() const;
   Internals::JsonUInt asUnsignedInteger() const;
