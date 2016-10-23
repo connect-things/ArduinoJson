@@ -5,6 +5,11 @@ HEAD
 ----
 
 * Increased default nesting limit to 50 when compiled for a computer (issue #349)
+* Templatized all functions using `String` or `std::string`
+
+**BREAKING CHANGE**:
+`myObject.get("myKey")` must be replaced by `myObject.get<JsonVariant>("myKey")` (no change required for `myObject["key"]`)
+
 
 v5.6.7
 ------
