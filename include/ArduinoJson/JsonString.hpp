@@ -42,6 +42,15 @@ class JsonString<char*> {
     return strcmp(_str, expected) == 0;
   }
 
+  template <typename Buffer>
+  char* duplicate(Buffer* buffer) const {
+    if (!_str) return NULL;
+    size_t size = strlen(_str) + 1;
+    void* dup = buffer->alloc(size);
+    if (dup != NULL) memcpy(dup, _str, size);
+    return static_cast<char*>(dup);
+  }
+
   static const bool has_append = false;
   static const bool should_copy = false;
 };
@@ -64,6 +73,15 @@ class JsonString<String> {
 
   const char* c_str() const {
     return _str->c_str();
+  }
+
+  template <typename Buffer>
+  char* duplicate(Buffer* buffer) const {
+    if (!_str->c_str()) return NULL;
+    size_t size = _str->size() + 1;
+    void* dup = buffer->alloc(size);
+    if (dup != NULL) memcpy(dup, _str->c_str(), size);
+    return static_cast<char*>(dup);
   }
 
   bool equals(const char* expected) const {
