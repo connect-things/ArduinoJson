@@ -8,7 +8,22 @@ HEAD
 * Templatized all functions using `String` or `std::string`
 
 **BREAKING CHANGE**:
-`myObject.get("myKey")` must be replaced by `myObject.get<JsonVariant>("myKey")` (no change required for `myObject["key"]`)
+
+The non-template function `JsonObject::get()` and `JsonArray.get()` have been removed. This means that you need to explicitely tell the type you expect in return.
+
+Old code:
+
+```c++
+JsonVariant value1 = myObject.get("myKey");
+JsonVariant value2 = myArray.get(0);
+```
+
+New code:
+
+```c++
+JsonVariant value1 = myObject.get<JsonVariant>("myKey");
+JsonVariant value2 = myArray.get<JsonVariant>(0);
+```
 
 
 v5.6.7

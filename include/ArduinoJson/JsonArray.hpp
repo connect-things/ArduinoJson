@@ -48,7 +48,7 @@ class JsonArray : public Internals::JsonPrintable<JsonArray>,
 
   // Gets the value at the specified index
   JsonVariant operator[](size_t index) const {
-    return get(index);
+    return get<JsonVariant>(index);
   }
 
   // Gets or sets the value at specified index
@@ -105,12 +105,6 @@ class JsonArray : public Internals::JsonPrintable<JsonArray>,
                                 bool>::type
   set(size_t index, T value, uint8_t decimals) {
     return setNodeAt(index, JsonVariant(value, decimals));
-  }
-
-  // Gets the value at the specified index.
-  JsonVariant get(size_t index) const {
-    node_type *node = getNodeAt(index);
-    return node ? node->content : JsonVariant();
   }
 
   // Gets the value at the specified index.

@@ -36,10 +36,6 @@ class JsonArraySubscript : public JsonVariantBase<JsonArraySubscript> {
     return _index < _array.size();
   }
 
-  FORCE_INLINE operator JsonVariant() const {
-    return _array.get(_index);
-  }
-
   template <typename T>
   FORCE_INLINE typename Internals::JsonVariantAs<T>::type as() const {
     return _array.get<T>(_index);
