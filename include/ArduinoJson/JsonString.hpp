@@ -9,9 +9,11 @@
 
 #include "Configuration.hpp"
 
-#if ARDUINOJSON_USE_ARDUINO_STRING
+#if ARDUINOJSON_ENABLE_ARDUINO_STRING
 #include <WString.h>
-#else
+#endif
+
+#if ARDUINOJSON_ENABLE_STD_STRING
 #include <string>
 #endif
 
@@ -102,22 +104,20 @@ class StandardJsonString {
   static const bool should_copy = true;
 };
 
-#if ARDUINOJSON_USE_ARDUINO_STRING
-
+#if ARDUINOJSON_ENABLE_ARDUINO_STRING
 template <>
 class JsonString<String> : public StandardJsonString<String> {
  public:
   JsonString(const String& str) : StandardJsonString(str) {}
 };
+#endif
 
-#else
-
+#if ARDUINOJSON_ENABLE_STD_STRING
 template <>
 class JsonString<std::string> : public StandardJsonString<std::string> {
  public:
   JsonString(const std::string& str) : StandardJsonString(str) {}
 };
-
 #endif
 
 template <typename TString>
