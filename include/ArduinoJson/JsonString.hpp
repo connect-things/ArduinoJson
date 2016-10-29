@@ -7,7 +7,13 @@
 
 #pragma once
 
-#include "String.hpp"
+#include "Configuration.hpp"
+
+#if ARDUINOJSON_USE_ARDUINO_STRING
+#include <WString.h>
+#else
+#include <string>
+#endif
 
 namespace ArduinoJson {
 
@@ -61,15 +67,15 @@ class JsonString<char[N]> : public JsonString<char*> {};
 template <>
 class JsonString<const char*> : public JsonString<char*> {};
 
-template <>
-class JsonString<String> {
+template <typename TString>
+class StandardJsonString {
  protected:
-  const String* _str;
+  const TString* _str;
 
  public:
-  typedef JsonString<String> type;
+  typedef JsonString<TString> type;
 
-  JsonString(const String& str) : _str(&str) {}
+  StandardJsonString(const TString& str) : _str(&str) {}
 
   const char* c_str() const {
     return _str->c_str();
@@ -89,12 +95,30 @@ class JsonString<String> {
   }
 
   void append(char c) {
-    *const_cast<String*>(_str) += static_cast<char>(c);
+    *const_cast<TString*>(_str) += static_cast<char>(c);
   }
 
   static const bool has_append = true;
   static const bool should_copy = true;
 };
+
+#if ARDUINOJSON_USE_ARDUINO_STRING
+
+template <>
+class JsonString<String> : public StandardJsonString<String> {
+ public:
+  JsonString(const String& str) : StandardJsonString(str) {}
+};
+
+#else
+
+template <>
+class JsonString<std::string> : public StandardJsonString<std::string> {
+ public:
+  JsonString(const std::string& str) : StandardJsonString(str) {}
+};
+
+#endif
 
 template <typename TString>
 inline typename JsonString<TString>::type makeJsonString(const TString& str) {
