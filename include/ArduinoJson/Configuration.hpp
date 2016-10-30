@@ -29,7 +29,7 @@
 
 // Arduino doesn't have std::string
 #ifndef ARDUINOJSON_ENABLE_STD_STRING
-#define ARDUINOJSON_ENABLE_STD_STRING 1
+#define ARDUINOJSON_ENABLE_STD_STRING 0
 #endif
 
 // Arduino doesn't support STL stream
