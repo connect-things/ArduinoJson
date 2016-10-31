@@ -108,7 +108,7 @@ class StandardJsonString {
 template <>
 class JsonString<String> : public StandardJsonString<String> {
  public:
-  JsonString(const String& str) : StandardJsonString(str) {}
+  JsonString(const String& str) : StandardJsonString<String>(str) {}
 };
 #endif
 
@@ -116,7 +116,7 @@ class JsonString<String> : public StandardJsonString<String> {
 template <>
 class JsonString<std::string> : public StandardJsonString<std::string> {
  public:
-  JsonString(const std::string& str) : StandardJsonString(str) {}
+  JsonString(const std::string& str) : StandardJsonString<std::string>(str) {}
 };
 #endif
 
