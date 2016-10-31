@@ -70,7 +70,7 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
   // bool set(Key, JsonVariant&);
   template <typename TValue, typename TString>
   bool set(const TString& key, const TValue& value) {
-    return setNodeAt(makeJsonString(key), value);
+    return setNodeAt(key, value);
   }
   // bool set(Key, float value, uint8_t decimals);
   // bool set(Key, double value, uint8_t decimals);
@@ -78,7 +78,7 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
   typename TypeTraits::EnableIf<TypeTraits::IsFloatingPoint<TValue>::value,
                                 bool>::type
   set(const TString& key, TValue value, uint8_t decimals) {
-    return setNodeAt(makeJsonString(key), JsonVariant(value, decimals));
+    return setNodeAt(key, JsonVariant(value, decimals));
   }
 
   // Gets the value associated with the specified key.
@@ -129,8 +129,8 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
 
  private:
   // Returns the list node that matches the specified key.
-  template <typename TString>
-  node_type* getNodeAt(JsonString<TString> key) const {
+  template <typename TJsonString>
+  node_type* getNodeAt(TJsonString key) const {
     for (node_type* node = _firstNode; node; node = node->next) {
       if (key.equals(node->content.key)) return node;
     }
@@ -138,39 +138,41 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
   }
 
   template <typename TValue, typename TString>
-  bool setNodeAt(JsonString<TString> key, const TValue& value) {
+  FORCE_INLINE bool setNodeAt(const TString& key, const TValue& value) {
+    return setNodeAt(makeJsonString(key), getStoragePolicy(key), value);
+  }
+
+  template <typename TValue, typename TJsonString>
+  bool setNodeAt(TJsonString key, StoragePolicy::Default, const TValue& value) {
     node_type* node = getNodeAt(key);
     if (!node) {
       node = addNewNode();
-      if (!node || !setNodeKey(node, key)) return false;
+      if (!node) return false;
+      node->content.key = key.c_str();
     }
-    return setNodeValue(node, value);
+    return setNodeValue(node, value, getStoragePolicy(value));
   }
 
-  template <typename TString>
-  typename TypeTraits::EnableIf<!JsonString<TString>::should_copy, bool>::type
-  setNodeKey(node_type* node, JsonString<TString> key) {
-    node->content.key = key.c_str();
-    return true;
-  }
-
-  template <typename TString>
-  typename TypeTraits::EnableIf<JsonString<TString>::should_copy, bool>::type
-  setNodeKey(node_type* node, JsonString<TString> key) {
-    node->content.key = _buffer->strdup(key.c_str());
-    return node->content.key != NULL;
+  template <typename TValue, typename TJsonString>
+  bool setNodeAt(TJsonString key, StoragePolicy::Clone, const TValue& value) {
+    node_type* node = getNodeAt(key);
+    if (!node) {
+      node = addNewNode();
+      if (!node) return false;
+      node->content.key = _buffer->strdup(key.c_str());
+      if (!node->content.key) return false;
+    }
+    return setNodeValue(node, value, getStoragePolicy(value));
   }
 
   template <typename T>
-  typename TypeTraits::EnableIf<!JsonString<T>::should_copy, bool>::type
-  setNodeValue(node_type* node, const T& value) {
+  bool setNodeValue(node_type* node, const T& value, StoragePolicy::Default) {
     node->content.value = value;
     return true;
   }
 
   template <typename T>
-  typename TypeTraits::EnableIf<JsonString<T>::should_copy, bool>::type
-  setNodeValue(node_type* node, const T& value) {
+  bool setNodeValue(node_type* node, const T& value, StoragePolicy::Clone) {
     const char* copy = duplicateString(value);
     if (!copy) return false;
     node->content.value = copy;

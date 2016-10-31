@@ -27,7 +27,7 @@ class DynamicStringBuilder : public Print {
  private:
   DynamicStringBuilder &operator=(const DynamicStringBuilder &);
 
-  typename JsonString<TString>::type _str;
+  typename GetJsonString<TString>::type _str;
 };
 }
 }

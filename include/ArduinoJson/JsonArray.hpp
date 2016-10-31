@@ -215,15 +215,18 @@ class JsonArray : public Internals::JsonPrintable<JsonArray>,
   }
 
   template <typename T>
-  typename TypeTraits::EnableIf<!JsonString<T>::should_copy, bool>::type
-  setNodeValue(node_type *node, const T &value) {
+  FORCE_INLINE bool setNodeValue(node_type *node, const T &value) {
+    return setNodeValue(node, value, getStoragePolicy(value));
+  }
+
+  template <typename T>
+  bool setNodeValue(node_type *node, const T &value, StoragePolicy::Default) {
     node->content = value;
     return true;
   }
 
   template <typename T>
-  typename TypeTraits::EnableIf<JsonString<T>::should_copy, bool>::type
-  setNodeValue(node_type *node, const T &value) {
+  bool setNodeValue(node_type *node, const T &value, StoragePolicy::Clone) {
     const char *copy = duplicateString(value);
     if (!copy) return false;
     node->content = copy;
