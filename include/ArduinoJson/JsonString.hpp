@@ -86,7 +86,7 @@ class StandardJsonString {
   template <typename Buffer>
   char* duplicate(Buffer* buffer) const {
     if (!_str->c_str()) return NULL;
-    size_t size = _str->size() + 1;
+    size_t size = _str->length() + 1;
     void* dup = buffer->alloc(size);
     if (dup != NULL) memcpy(dup, _str->c_str(), size);
     return static_cast<char*>(dup);
