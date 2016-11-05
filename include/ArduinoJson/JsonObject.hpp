@@ -9,6 +9,7 @@
 
 #include "Internals/JsonBufferAllocated.hpp"
 #include "Internals/JsonPrintable.hpp"
+#include "Internals/JsonVariantSetter.hpp"
 #include "Internals/List.hpp"
 #include "Internals/ReferenceType.hpp"
 #include "JsonPair.hpp"
@@ -150,7 +151,8 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
       if (!node) return false;
       node->content.key = key.c_str();
     }
-    return setNodeValue(node, value, getStoragePolicy(value));
+    return Internals::JsonVariantSetter<TValue>::set(
+        _buffer, node->content.value, value);
   }
 
   template <typename TValue, typename TJsonString>
@@ -162,21 +164,8 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
       node->content.key = _buffer->strdup(key.c_str());
       if (!node->content.key) return false;
     }
-    return setNodeValue(node, value, getStoragePolicy(value));
-  }
-
-  template <typename T>
-  bool setNodeValue(node_type* node, const T& value, StoragePolicy::Default) {
-    node->content.value = value;
-    return true;
-  }
-
-  template <typename T>
-  bool setNodeValue(node_type* node, const T& value, StoragePolicy::Clone) {
-    const char* copy = duplicateString(value);
-    if (!copy) return false;
-    node->content.value = copy;
-    return true;
+    return Internals::JsonVariantSetter<TValue>::set(
+        _buffer, node->content.value, value);
   }
 };
 }

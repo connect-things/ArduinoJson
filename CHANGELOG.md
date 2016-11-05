@@ -8,6 +8,7 @@ HEAD
 * Templatized all functions using `String` or `std::string`
 * Replaced `ARDUINOJSON_USE_ARDUINO_STRING` by `ARDUINOJSON_ENABLE_STD_STRING` and `ARDUINOJSON_ENABLE_ARDUINO_STRING`
 * Added example `StringExample.ino` to show where `String` can be used
+* Fixed support for `StringSumHelper` (issue #184)
 * Increased default nesting limit to 50 when compiled for a computer (issue #349)
 
 **BREAKING CHANGES**:

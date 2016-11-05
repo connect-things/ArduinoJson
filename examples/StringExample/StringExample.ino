@@ -12,7 +12,7 @@
 // This example shows the different ways you can use String with ArduinoJson.
 // Please don't see this as an invitation to use String.
 // On the contrary, you should always use char[] when possible, it's much more
-// efficient in term of speed and memory usage.
+// efficient in term of code size, speed and memory usage.
 
 void setup() {
   DynamicJsonBuffer jsonBuffer;
@@ -38,6 +38,8 @@ void setup() {
   // You can set a String to a JsonObject or JsonArray:
   // WARNING: the content of the String will be duplicated in the JsonBuffer.
   root["sensor"] = sensor;
+
+  root["sensor"] = sensor + "_2";
 
   String output;
   root.printTo(output);

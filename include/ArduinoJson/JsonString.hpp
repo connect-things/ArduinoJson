@@ -30,11 +30,11 @@ struct GetJsonString<const TString> : GetJsonString<TString> {};
 template <typename TString>
 struct GetJsonString<TString&> : GetJsonString<TString> {};
 
-class StaticJsonString {
+class CharPtrJsonString {
   const char* _str;
 
  public:
-  StaticJsonString(const char* str) : _str(str) {}
+  CharPtrJsonString(const char* str) : _str(str) {}
 
   const char* c_str() const {
     return _str;
@@ -58,26 +58,26 @@ class StaticJsonString {
 
 template <size_t N>
 struct GetJsonString<char[N]> {
-  typedef StaticJsonString type;
+  typedef CharPtrJsonString type;
 };
 
 template <>
 struct GetJsonString<const char*> {
-  typedef StaticJsonString type;
+  typedef CharPtrJsonString type;
 };
 
 template <>
 struct GetJsonString<char*> {
-  typedef StaticJsonString type;
+  typedef CharPtrJsonString type;
 };
 
 template <typename TString>
-class StandardJsonString {
+class StlJsonString {
  protected:
   const TString* _str;
 
  public:
-  StandardJsonString(const TString& str) : _str(&str) {}
+  StlJsonString(const TString& str) : _str(&str) {}
 
   const char* c_str() const {
     return _str->c_str();
@@ -101,14 +101,17 @@ class StandardJsonString {
   }
 
   static const bool has_append = true;
-
-  typedef StoragePolicy::Clone storage_policy;
+  static const bool should_copy = true;
 };
 
 #if ARDUINOJSON_ENABLE_ARDUINO_STRING
 template <>
 struct GetJsonString<String> {
-  typedef StandardJsonString<String> type;
+  typedef StlJsonString<String> type;
+};
+template <>
+struct GetJsonString<StringSumHelper> {
+  typedef StlJsonString<StringSumHelper> type;
 };
 template <>
 struct GetStoragePolicy<String> {
@@ -119,7 +122,7 @@ struct GetStoragePolicy<String> {
 #if ARDUINOJSON_ENABLE_STD_STRING
 template <>
 struct GetJsonString<std::string> {
-  typedef StandardJsonString<std::string> type;
+  typedef StlJsonString<std::string> type;
 };
 template <>
 struct GetStoragePolicy<std::string> {
