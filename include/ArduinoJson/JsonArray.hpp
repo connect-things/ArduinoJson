@@ -9,10 +9,10 @@
 
 #include "Internals/JsonBufferAllocated.hpp"
 #include "Internals/JsonPrintable.hpp"
+#include "Internals/JsonString.hpp"
 #include "Internals/JsonVariantSetter.hpp"
 #include "Internals/List.hpp"
 #include "Internals/ReferenceType.hpp"
-#include "JsonString.hpp"
 #include "JsonVariant.hpp"
 #include "TypeTraits/EnableIf.hpp"
 #include "TypeTraits/IsFloatingPoint.hpp"

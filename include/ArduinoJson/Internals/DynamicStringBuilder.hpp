@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "../JsonString.hpp"
 #include "../Print.hpp"
+#include "JsonString.hpp"
 
 namespace ArduinoJson {
 namespace Internals {

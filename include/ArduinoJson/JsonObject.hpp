@@ -9,11 +9,11 @@
 
 #include "Internals/JsonBufferAllocated.hpp"
 #include "Internals/JsonPrintable.hpp"
+#include "Internals/JsonString.hpp"
 #include "Internals/JsonVariantSetter.hpp"
 #include "Internals/List.hpp"
 #include "Internals/ReferenceType.hpp"
 #include "JsonPair.hpp"
-#include "JsonString.hpp"
 #include "TypeTraits/EnableIf.hpp"
 #include "TypeTraits/IsFloatingPoint.hpp"
 #include "TypeTraits/IsSame.hpp"
@@ -71,7 +71,7 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
   // bool set(Key, JsonVariant&);
   template <typename TValue, typename TString>
   bool set(const TString& key, const TValue& value) {
-    return setNodeAt(makeJsonString(key), value);
+    return setNodeAt(Internals::makeJsonString(key), value);
   }
   // bool set(Key, float value, uint8_t decimals);
   // bool set(Key, double value, uint8_t decimals);
@@ -79,14 +79,15 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
   typename TypeTraits::EnableIf<TypeTraits::IsFloatingPoint<TValue>::value,
                                 bool>::type
   set(const TString& key, TValue value, uint8_t decimals) {
-    return setNodeAt(makeJsonString(key), JsonVariant(value, decimals));
+    return setNodeAt(Internals::makeJsonString(key),
+                     JsonVariant(value, decimals));
   }
 
   // Gets the value associated with the specified key.
   template <typename TValue, typename TString>
   typename Internals::JsonVariantAs<TValue>::type get(
       const TString& key) const {
-    node_type* node = getNodeAt(makeJsonString(key));
+    node_type* node = getNodeAt(Internals::makeJsonString(key));
     return node ? node->content.value.as<TValue>()
                 : JsonVariant::defaultValue<TValue>();
   }
@@ -94,7 +95,7 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
   // Checks the type of the value associated with the specified key.
   template <typename TValue, typename TString>
   bool is(const TString& key) const {
-    node_type* node = getNodeAt(makeJsonString(key));
+    node_type* node = getNodeAt(Internals::makeJsonString(key));
     return node ? node->content.value.is<TValue>() : false;
   }
 
@@ -111,13 +112,13 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
   // Tells weither the specified key is present and associated with a value.
   template <typename TString>
   bool containsKey(const TString& key) const {
-    return getNodeAt(makeJsonString(key)) != NULL;
+    return getNodeAt(Internals::makeJsonString(key)) != NULL;
   }
 
   // Removes the specified key and the associated value.
   template <typename TString>
   void remove(const TString& key) {
-    removeNode(getNodeAt(makeJsonString(key)));
+    removeNode(getNodeAt(Internals::makeJsonString(key)));
   }
 
   // Returns a reference an invalid JsonObject.
@@ -145,8 +146,8 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
       node = addNewNode();
       if (!node) return false;
 
-      if (TJsonString::should_copy) {
-        node->content.key = _buffer->strdup(key.c_str());
+      if (TJsonString::should_duplicate) {
+        node->content.key = key.duplicate(_buffer);
         if (!node->content.key) return false;
       } else {
         node->content.key = key.c_str();

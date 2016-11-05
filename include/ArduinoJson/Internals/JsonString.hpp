@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "Configuration.hpp"
+#include "../Configuration.hpp"
 
 #if ARDUINOJSON_ENABLE_ARDUINO_STRING
 #include <WString.h>
@@ -18,6 +18,7 @@
 #endif
 
 namespace ArduinoJson {
+namespace Internals {
 
 // A meta-function returning the JsonString type to be used for a TString
 template <typename TString>
@@ -53,7 +54,7 @@ class CharPtrJsonString {
   }
 
   static const bool has_append = false;
-  static const bool should_copy = false;
+  static const bool should_duplicate = false;
 };
 
 template <size_t N>
@@ -101,7 +102,7 @@ class StlJsonString {
   }
 
   static const bool has_append = true;
-  static const bool should_copy = true;
+  static const bool should_duplicate = true;
 };
 
 #if ARDUINOJSON_ENABLE_ARDUINO_STRING
@@ -126,5 +127,6 @@ template <typename TString>
 inline typename GetJsonString<TString>::type makeJsonString(
     const TString& str) {
   return typename GetJsonString<TString>::type(str);
+}
 }
 }

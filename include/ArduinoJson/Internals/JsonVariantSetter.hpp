@@ -8,9 +8,9 @@
 #pragma once
 
 #include "../JsonBuffer.hpp"
-#include "../JsonString.hpp"
 #include "../JsonVariant.hpp"
 #include "../TypeTraits/EnableIf.hpp"
+#include "JsonString.hpp"
 
 namespace ArduinoJson {
 namespace Internals {
@@ -24,8 +24,8 @@ struct JsonVariantSetter {
 };
 
 template <typename T>
-struct JsonVariantSetter<T, typename TypeTraits::EnableIf<
-                                GetJsonString<T>::type::should_copy>::type> {
+struct JsonVariantSetter<T, typename TypeTraits::EnableIf<GetJsonString<
+                                T>::type::should_duplicate>::type> {
   static bool set(JsonBuffer* buffer, JsonVariant& destination,
                   const T& value) {
     const char* copy = buffer->strdup(value);

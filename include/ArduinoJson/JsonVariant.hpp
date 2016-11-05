@@ -162,7 +162,8 @@ class JsonVariant : public JsonVariantBase<JsonVariant> {
   // std::string as<std::string>() const;
   // String as<String>() const;
   template <typename T>
-  typename TypeTraits::EnableIf<GetJsonString<T>::type::has_append, T>::type
+  typename TypeTraits::EnableIf<Internals::GetJsonString<T>::type::has_append,
+                                T>::type
   as() const {
     const char *cstr = asString();
     if (cstr) return T(cstr);
