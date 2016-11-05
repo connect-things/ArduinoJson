@@ -24,12 +24,6 @@ namespace Internals {
 template <typename TString>
 struct GetJsonString {};
 
-template <typename TString>
-struct GetJsonString<const TString> : GetJsonString<TString> {};
-
-template <typename TString>
-struct GetJsonString<TString&> : GetJsonString<TString> {};
-
 class CharPtrJsonString {
   const char* _str;
 
@@ -55,11 +49,6 @@ class CharPtrJsonString {
 
   static const bool has_append = false;
   static const bool should_duplicate = false;
-};
-
-template <size_t N>
-struct GetJsonString<char[N]> {
-  typedef CharPtrJsonString type;
 };
 
 template <>

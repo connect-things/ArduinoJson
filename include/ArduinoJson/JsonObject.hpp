@@ -14,6 +14,7 @@
 #include "Internals/ReferenceType.hpp"
 #include "Internals/ValueSetter.hpp"
 #include "JsonPair.hpp"
+#include "TypeTraits/Decay.hpp"
 #include "TypeTraits/EnableIf.hpp"
 #include "TypeTraits/IsFloatingPoint.hpp"
 #include "TypeTraits/IsSame.hpp"
@@ -71,7 +72,7 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
   // bool set(Key, JsonVariant&);
   template <typename TValue, typename TString>
   bool set(const TString& key, const TValue& value) {
-    return setNodeAt(Internals::makeJsonString(key), value);
+    return setNodeAt(TypeTraits::decay(key), value);
   }
   // bool set(Key, float value, uint8_t decimals);
   // bool set(Key, double value, uint8_t decimals);
@@ -79,15 +80,14 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
   typename TypeTraits::EnableIf<TypeTraits::IsFloatingPoint<TValue>::value,
                                 bool>::type
   set(const TString& key, TValue value, uint8_t decimals) {
-    return setNodeAt(Internals::makeJsonString(key),
-                     JsonVariant(value, decimals));
+    return setNodeAt(TypeTraits::decay(key), JsonVariant(value, decimals));
   }
 
   // Gets the value associated with the specified key.
   template <typename TValue, typename TString>
   typename Internals::JsonVariantAs<TValue>::type get(
       const TString& key) const {
-    node_type* node = getNodeAt(Internals::makeJsonString(key));
+    node_type* node = getNodeAt(TypeTraits::decay(key));
     return node ? node->content.value.as<TValue>()
                 : JsonVariant::defaultValue<TValue>();
   }
@@ -95,7 +95,7 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
   // Checks the type of the value associated with the specified key.
   template <typename TValue, typename TString>
   bool is(const TString& key) const {
-    node_type* node = getNodeAt(Internals::makeJsonString(key));
+    node_type* node = getNodeAt(TypeTraits::decay(key));
     return node ? node->content.value.is<TValue>() : false;
   }
 
@@ -112,13 +112,13 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
   // Tells weither the specified key is present and associated with a value.
   template <typename TString>
   bool containsKey(const TString& key) const {
-    return getNodeAt(Internals::makeJsonString(key)) != NULL;
+    return getNodeAt(TypeTraits::decay(key)) != NULL;
   }
 
   // Removes the specified key and the associated value.
   template <typename TString>
   void remove(const TString& key) {
-    removeNode(getNodeAt(Internals::makeJsonString(key)));
+    removeNode(getNodeAt(TypeTraits::decay(key)));
   }
 
   // Returns a reference an invalid JsonObject.
@@ -131,27 +131,25 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
 
  private:
   // Returns the list node that matches the specified key.
-  template <typename TJsonString>
-  node_type* getNodeAt(TJsonString key) const {
+  template <typename TString>
+  node_type* getNodeAt(TString key) const {
+    typename Internals::GetJsonString<TString>::type keyString(key);
     for (node_type* node = _firstNode; node; node = node->next) {
-      if (key.equals(node->content.key)) return node;
+      if (keyString.equals(node->content.key)) return node;
     }
     return NULL;
   }
 
-  template <typename TValue, typename TJsonString>
-  bool setNodeAt(TJsonString key, const TValue& value) {
+  template <typename TValue, typename TString>
+  bool setNodeAt(TString key, const TValue& value) {
     node_type* node = getNodeAt(key);
     if (!node) {
       node = addNewNode();
       if (!node) return false;
 
-      if (TJsonString::should_duplicate) {
-        node->content.key = key.duplicate(_buffer);
-        if (!node->content.key) return false;
-      } else {
-        node->content.key = key.c_str();
-      }
+      bool key_ok =
+          Internals::ValueSetter<TString>::set(_buffer, node->content.key, key);
+      if (!key_ok) return false;
     }
     return Internals::ValueSetter<TValue>::set(_buffer, node->content.value,
                                                value);

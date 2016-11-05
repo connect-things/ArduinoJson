@@ -19,23 +19,18 @@ struct Decay {
 };
 
 template <typename T>
-struct Decay<T*> {
-  typedef typename Decay<T>::type* type;
-};
-
-template <typename T>
 struct Decay<T[]> {
-  typedef typename Decay<T>::type* type;
+  typedef T* type;
 };
 
 template <typename T, size_t N>
 struct Decay<T[N]> {
-  typedef typename Decay<T>::type* type;
+  typedef T* type;
 };
 
 template <typename T>
-typename Decay<T>::type decay(const T& value) {
-  return static_cast<Decay<T>::type>(value);
+typename Decay<T>::type decay(T& value) {
+  return static_cast<typename Decay<T>::type>(value);
 }
 }
 }
