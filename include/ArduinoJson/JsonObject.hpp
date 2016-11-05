@@ -9,9 +9,9 @@
 
 #include "Internals/JsonBufferAllocated.hpp"
 #include "Internals/JsonPrintable.hpp"
-#include "Internals/JsonString.hpp"
 #include "Internals/List.hpp"
 #include "Internals/ReferenceType.hpp"
+#include "Internals/StringFuncs.hpp"
 #include "Internals/ValueSetter.hpp"
 #include "JsonPair.hpp"
 #include "TypeTraits/ConstRefOrConstPtr.hpp"
@@ -141,7 +141,7 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
   template <typename TStringRef>
   node_type* getNodeAtImpl(TStringRef key) const {
     for (node_type* node = _firstNode; node; node = node->next) {
-      if (Internals::JsonString<TStringRef>::equals(key, node->content.key))
+      if (Internals::StringFuncs<TStringRef>::equals(key, node->content.key))
         return node;
     }
     return NULL;

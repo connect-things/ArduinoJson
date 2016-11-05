@@ -21,15 +21,15 @@ namespace ArduinoJson {
 namespace Internals {
 
 template <typename TString>
-struct JsonString {};
+struct StringFuncs {};
 
 template <typename TString>
-struct JsonString<const TString> : JsonString<TString> {};
+struct StringFuncs<const TString> : StringFuncs<TString> {};
 
 template <typename TString>
-struct JsonString<TString&> : JsonString<TString> {};
+struct StringFuncs<TString&> : StringFuncs<TString> {};
 
-struct CharPtrJsonString {
+struct CharPtrFuncs {
   static bool equals(const char* str, const char* expected) {
     return strcmp(str, expected) == 0;
   }
@@ -48,13 +48,13 @@ struct CharPtrJsonString {
 };
 
 template <>
-struct JsonString<const char*> : CharPtrJsonString {};
+struct StringFuncs<const char*> : CharPtrFuncs {};
 
 template <>
-struct JsonString<char*> : CharPtrJsonString {};
+struct StringFuncs<char*> : CharPtrFuncs {};
 
 template <typename TString>
-struct StlJsonString {
+struct StdStringFuncs {
   template <typename Buffer>
   static char* duplicate(const TString& str, Buffer* buffer) {
     if (!str.c_str()) return NULL;  // <- Arduino string can return NULL
@@ -78,14 +78,14 @@ struct StlJsonString {
 
 #if ARDUINOJSON_ENABLE_ARDUINO_STRING
 template <>
-struct JsonString<String> : StlJsonString<String> {};
+struct StringFuncs<String> : StdStringFuncs<String> {};
 template <>
-struct JsonString<StringSumHelper> : StlJsonString<StringSumHelper> {};
+struct StringFuncs<StringSumHelper> : StdStringFuncs<StringSumHelper> {};
 #endif
 
 #if ARDUINOJSON_ENABLE_STD_STRING
 template <>
-struct JsonString<std::string> : StlJsonString<std::string> {};
+struct StringFuncs<std::string> : StdStringFuncs<std::string> {};
 #endif
 }
 }

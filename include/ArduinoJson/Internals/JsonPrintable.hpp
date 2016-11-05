@@ -51,7 +51,7 @@ class JsonPrintable {
   }
 
   template <typename TString>
-  typename TypeTraits::EnableIf<JsonString<TString>::has_append, size_t>::type
+  typename TypeTraits::EnableIf<StringFuncs<TString>::has_append, size_t>::type
   printTo(TString &str) const {
     DynamicStringBuilder<TString> sb(str);
     return printTo(sb);
@@ -73,7 +73,7 @@ class JsonPrintable {
   }
 
   template <typename TString>
-  typename TypeTraits::EnableIf<JsonString<TString>::has_append, size_t>::type
+  typename TypeTraits::EnableIf<StringFuncs<TString>::has_append, size_t>::type
   prettyPrintTo(TString &str) const {
     DynamicStringBuilder<TString> sb(str);
     return prettyPrintTo(sb);

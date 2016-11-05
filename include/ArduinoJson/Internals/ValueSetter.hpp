@@ -10,7 +10,7 @@
 #include "../JsonBuffer.hpp"
 #include "../JsonVariant.hpp"
 #include "../TypeTraits/EnableIf.hpp"
-#include "JsonString.hpp"
+#include "StringFuncs.hpp"
 
 namespace ArduinoJson {
 namespace Internals {
@@ -27,7 +27,7 @@ struct ValueSetter {
 
 template <typename TSource>
 struct ValueSetter<TSource, typename TypeTraits::EnableIf<
-                                JsonString<TSource>::should_duplicate>::type> {
+                                StringFuncs<TSource>::should_duplicate>::type> {
   template <typename TDestination>
   static bool set(JsonBuffer* buffer, TDestination& destination,
                   const TSource& source) {

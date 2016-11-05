@@ -8,7 +8,7 @@
 #pragma once
 
 #include "../Print.hpp"
-#include "JsonString.hpp"
+#include "StringFuncs.hpp"
 
 namespace ArduinoJson {
 namespace Internals {
@@ -20,7 +20,7 @@ class DynamicStringBuilder : public Print {
   DynamicStringBuilder(TString &str) : _str(str) {}
 
   virtual size_t write(uint8_t c) {
-    JsonString<TString>::append(_str, static_cast<char>(c));
+    StringFuncs<TString>::append(_str, static_cast<char>(c));
     return 1;
   }
 

@@ -106,7 +106,7 @@ class JsonBuffer {
   // Duplicate a string
   template <typename TString>
   char *strdup(const TString &src) {
-    return Internals::JsonString<TString>::duplicate(src, this);
+    return Internals::StringFuncs<TString>::duplicate(src, this);
   }
 
   // Allocates n bytes in the JsonBuffer.

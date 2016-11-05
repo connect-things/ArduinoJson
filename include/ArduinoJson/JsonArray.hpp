@@ -9,9 +9,9 @@
 
 #include "Internals/JsonBufferAllocated.hpp"
 #include "Internals/JsonPrintable.hpp"
-#include "Internals/JsonString.hpp"
 #include "Internals/List.hpp"
 #include "Internals/ReferenceType.hpp"
+#include "Internals/StringFuncs.hpp"
 #include "Internals/ValueSetter.hpp"
 #include "JsonVariant.hpp"
 #include "TypeTraits/EnableIf.hpp"
