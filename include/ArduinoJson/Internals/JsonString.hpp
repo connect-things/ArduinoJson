@@ -39,11 +39,11 @@ class CharPtrJsonString {
   }
 
   template <typename Buffer>
-  char* duplicate(Buffer* buffer) const {
-    if (!_str) return NULL;
-    size_t size = strlen(_str) + 1;
+  static char* duplicate(const char* str, Buffer* buffer) {
+    if (!str) return NULL;
+    size_t size = strlen(str) + 1;
     void* dup = buffer->alloc(size);
-    if (dup != NULL) memcpy(dup, _str, size);
+    if (dup != NULL) memcpy(dup, str, size);
     return static_cast<char*>(dup);
   }
 
@@ -74,11 +74,11 @@ class StlJsonString {
   }
 
   template <typename Buffer>
-  char* duplicate(Buffer* buffer) const {
-    if (!_str->c_str()) return NULL;
-    size_t size = _str->length() + 1;
+  static char* duplicate(const TString& str, Buffer* buffer) {
+    if (!str.c_str()) return NULL;  // <- Arduino string can return NULL
+    size_t size = str.length() + 1;
     void* dup = buffer->alloc(size);
-    if (dup != NULL) memcpy(dup, _str->c_str(), size);
+    if (dup != NULL) memcpy(dup, str.c_str(), size);
     return static_cast<char*>(dup);
   }
 
