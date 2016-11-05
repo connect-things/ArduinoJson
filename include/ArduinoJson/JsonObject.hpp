@@ -71,7 +71,7 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
   // bool set(Key, JsonVariant&);
   template <typename TValue, typename TString>
   bool set(const TString& key, const TValue& value) {
-    return setNodeAt(key, value);
+    return setNodeAt(makeJsonString(key), value);
   }
   // bool set(Key, float value, uint8_t decimals);
   // bool set(Key, double value, uint8_t decimals);
@@ -79,7 +79,7 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
   typename TypeTraits::EnableIf<TypeTraits::IsFloatingPoint<TValue>::value,
                                 bool>::type
   set(const TString& key, TValue value, uint8_t decimals) {
-    return setNodeAt(key, JsonVariant(value, decimals));
+    return setNodeAt(makeJsonString(key), JsonVariant(value, decimals));
   }
 
   // Gets the value associated with the specified key.
@@ -138,13 +138,8 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
     return NULL;
   }
 
-  template <typename TValue, typename TString>
-  FORCE_INLINE bool setNodeAt(const TString& key, const TValue& value) {
-    return doSetNodeAt(makeJsonString(key), value);
-  }
-
   template <typename TValue, typename TJsonString>
-  bool doSetNodeAt(TJsonString key, const TValue& value) {
+  bool setNodeAt(TJsonString key, const TValue& value) {
     node_type* node = getNodeAt(key);
     if (!node) {
       node = addNewNode();
