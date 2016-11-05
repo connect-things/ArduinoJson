@@ -132,10 +132,11 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
  private:
   // Returns the list node that matches the specified key.
   template <typename TString>
-  node_type* getNodeAt(TString key) const {
-    typename Internals::GetJsonString<TString>::type keyString(key);
+  node_type* getNodeAt(const TString& key) const {
     for (node_type* node = _firstNode; node; node = node->next) {
-      if (keyString.equals(node->content.key)) return node;
+      if (Internals::GetJsonString<TString>::type::equals(key,
+                                                          node->content.key))
+        return node;
     }
     return NULL;
   }

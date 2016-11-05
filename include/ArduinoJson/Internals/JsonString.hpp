@@ -34,8 +34,8 @@ class CharPtrJsonString {
     return _str;
   }
 
-  bool equals(const char* expected) const {
-    return strcmp(_str, expected) == 0;
+  static bool equals(const char* str, const char* expected) {
+    return strcmp(str, expected) == 0;
   }
 
   template <typename Buffer>
@@ -82,8 +82,8 @@ class StlJsonString {
     return static_cast<char*>(dup);
   }
 
-  bool equals(const char* expected) const {
-    return strcmp(_str->c_str(), expected) == 0;
+  static bool equals(const TString& str, const char* expected) {
+    return str == expected;
   }
 
   static void append(TString& str, char c) {
