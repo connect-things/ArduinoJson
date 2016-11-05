@@ -10,9 +10,9 @@
 #include "Internals/JsonBufferAllocated.hpp"
 #include "Internals/JsonPrintable.hpp"
 #include "Internals/JsonString.hpp"
-#include "Internals/JsonVariantSetter.hpp"
 #include "Internals/List.hpp"
 #include "Internals/ReferenceType.hpp"
+#include "Internals/ValueSetter.hpp"
 #include "JsonVariant.hpp"
 #include "TypeTraits/EnableIf.hpp"
 #include "TypeTraits/IsFloatingPoint.hpp"
@@ -217,7 +217,7 @@ class JsonArray : public Internals::JsonPrintable<JsonArray>,
 
   template <typename T>
   FORCE_INLINE bool setNodeValue(node_type *node, const T &value) {
-    return Internals::JsonVariantSetter<T>::set(_buffer, node->content, value);
+    return Internals::ValueSetter<T>::set(_buffer, node->content, value);
   }
 };
 }

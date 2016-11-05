@@ -10,9 +10,9 @@
 #include "Internals/JsonBufferAllocated.hpp"
 #include "Internals/JsonPrintable.hpp"
 #include "Internals/JsonString.hpp"
-#include "Internals/JsonVariantSetter.hpp"
 #include "Internals/List.hpp"
 #include "Internals/ReferenceType.hpp"
+#include "Internals/ValueSetter.hpp"
 #include "JsonPair.hpp"
 #include "TypeTraits/EnableIf.hpp"
 #include "TypeTraits/IsFloatingPoint.hpp"
@@ -153,8 +153,8 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
         node->content.key = key.c_str();
       }
     }
-    return Internals::JsonVariantSetter<TValue>::set(
-        _buffer, node->content.value, value);
+    return Internals::ValueSetter<TValue>::set(_buffer, node->content.value,
+                                               value);
   }
 };
 }
