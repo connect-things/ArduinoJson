@@ -20,14 +20,14 @@ class DynamicStringBuilder : public Print {
   DynamicStringBuilder(TString &str) : _str(str) {}
 
   virtual size_t write(uint8_t c) {
-    _str.append(static_cast<char>(c));
+    GetJsonString<TString>::type::append(_str, static_cast<char>(c));
     return 1;
   }
 
  private:
   DynamicStringBuilder &operator=(const DynamicStringBuilder &);
 
-  typename GetJsonString<TString>::type _str;
+  TString &_str;
 };
 }
 }

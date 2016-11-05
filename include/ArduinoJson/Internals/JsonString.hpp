@@ -86,8 +86,8 @@ class StlJsonString {
     return strcmp(_str->c_str(), expected) == 0;
   }
 
-  void append(char c) {
-    *const_cast<TString*>(_str) += static_cast<char>(c);
+  static void append(TString& str, char c) {
+    str += c;
   }
 
   static const bool has_append = true;
