@@ -67,7 +67,7 @@ template <typename TString>
 inline JsonArray &JsonObject::createNestedArray(const TString &key) {
   if (!_buffer) return JsonArray::invalid();
   JsonArray &array = _buffer->createArray();
-  setNodeAt(TypeTraits::decay(key), array);
+  setNodeAt(simplifyKeyType(key), array);
   return array;
 }
 }
