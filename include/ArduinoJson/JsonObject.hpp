@@ -140,29 +140,22 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
 
   template <typename TValue, typename TString>
   FORCE_INLINE bool setNodeAt(const TString& key, const TValue& value) {
-    return setNodeAt(makeJsonString(key), getStoragePolicy(key), value);
+    return doSetNodeAt(makeJsonString(key), value);
   }
 
   template <typename TValue, typename TJsonString>
-  bool setNodeAt(TJsonString key, StoragePolicy::Default, const TValue& value) {
+  bool doSetNodeAt(TJsonString key, const TValue& value) {
     node_type* node = getNodeAt(key);
     if (!node) {
       node = addNewNode();
       if (!node) return false;
-      node->content.key = key.c_str();
-    }
-    return Internals::JsonVariantSetter<TValue>::set(
-        _buffer, node->content.value, value);
-  }
 
-  template <typename TValue, typename TJsonString>
-  bool setNodeAt(TJsonString key, StoragePolicy::Clone, const TValue& value) {
-    node_type* node = getNodeAt(key);
-    if (!node) {
-      node = addNewNode();
-      if (!node) return false;
-      node->content.key = _buffer->strdup(key.c_str());
-      if (!node->content.key) return false;
+      if (TJsonString::should_copy) {
+        node->content.key = _buffer->strdup(key.c_str());
+        if (!node->content.key) return false;
+      } else {
+        node->content.key = key.c_str();
+      }
     }
     return Internals::JsonVariantSetter<TValue>::set(
         _buffer, node->content.value, value);

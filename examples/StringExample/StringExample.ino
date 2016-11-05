@@ -39,8 +39,11 @@ void setup() {
   // WARNING: the content of the String will be duplicated in the JsonBuffer.
   root["sensor"] = sensor;
 
-  root["sensor"] = sensor + "_2";
+  // You can also concatenate strings
+  // WARNING: the content of the String will be duplicated in the JsonBuffer.
+  root[String("sen") + "sor"] = String("gp") + "s";
 
+  // Lastly, you can print the resulting JSON to a String
   String output;
   root.printTo(output);
 }

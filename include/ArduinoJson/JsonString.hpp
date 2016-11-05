@@ -8,7 +8,6 @@
 #pragma once
 
 #include "Configuration.hpp"
-#include "StoragePolicy.hpp"
 
 #if ARDUINOJSON_ENABLE_ARDUINO_STRING
 #include <WString.h>
@@ -54,6 +53,7 @@ class CharPtrJsonString {
   }
 
   static const bool has_append = false;
+  static const bool should_copy = false;
 };
 
 template <size_t N>
@@ -113,20 +113,12 @@ template <>
 struct GetJsonString<StringSumHelper> {
   typedef StlJsonString<StringSumHelper> type;
 };
-template <>
-struct GetStoragePolicy<String> {
-  typedef StoragePolicy::Clone type;
-};
 #endif
 
 #if ARDUINOJSON_ENABLE_STD_STRING
 template <>
 struct GetJsonString<std::string> {
   typedef StlJsonString<std::string> type;
-};
-template <>
-struct GetStoragePolicy<std::string> {
-  typedef StoragePolicy::Clone type;
 };
 #endif
 
