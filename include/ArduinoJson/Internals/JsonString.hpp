@@ -25,15 +25,7 @@ template <typename TString>
 struct GetJsonString {};
 
 class CharPtrJsonString {
-  const char* _str;
-
  public:
-  CharPtrJsonString(const char* str) : _str(str) {}
-
-  const char* c_str() const {
-    return _str;
-  }
-
   static bool equals(const char* str, const char* expected) {
     return strcmp(str, expected) == 0;
   }
@@ -63,16 +55,7 @@ struct GetJsonString<char*> {
 
 template <typename TString>
 class StlJsonString {
- protected:
-  const TString* _str;
-
  public:
-  StlJsonString(const TString& str) : _str(&str) {}
-
-  const char* c_str() const {
-    return _str->c_str();
-  }
-
   template <typename Buffer>
   static char* duplicate(const TString& str, Buffer* buffer) {
     if (!str.c_str()) return NULL;  // <- Arduino string can return NULL
