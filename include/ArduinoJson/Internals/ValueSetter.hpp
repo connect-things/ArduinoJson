@@ -26,8 +26,8 @@ struct ValueSetter {
 };
 
 template <typename TSource>
-struct ValueSetter<TSource, typename TypeTraits::EnableIf<GetJsonString<
-                                TSource>::type::should_duplicate>::type> {
+struct ValueSetter<TSource, typename TypeTraits::EnableIf<
+                                JsonString<TSource>::should_duplicate>::type> {
   template <typename TDestination>
   static bool set(JsonBuffer* buffer, TDestination& destination,
                   const TSource& source) {

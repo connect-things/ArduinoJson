@@ -134,8 +134,7 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
   template <typename TString>
   node_type* getNodeAt(const TString& key) const {
     for (node_type* node = _firstNode; node; node = node->next) {
-      if (Internals::GetJsonString<TString>::type::equals(key,
-                                                          node->content.key))
+      if (Internals::JsonString<TString>::equals(key, node->content.key))
         return node;
     }
     return NULL;

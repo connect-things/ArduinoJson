@@ -20,12 +20,10 @@
 namespace ArduinoJson {
 namespace Internals {
 
-// A meta-function returning the JsonString type to be used for a TString
 template <typename TString>
-struct GetJsonString {};
+struct JsonString {};
 
-class CharPtrJsonString {
- public:
+struct CharPtrJsonString {
   static bool equals(const char* str, const char* expected) {
     return strcmp(str, expected) == 0;
   }
@@ -44,18 +42,13 @@ class CharPtrJsonString {
 };
 
 template <>
-struct GetJsonString<const char*> {
-  typedef CharPtrJsonString type;
-};
+struct JsonString<const char*> : CharPtrJsonString {};
 
 template <>
-struct GetJsonString<char*> {
-  typedef CharPtrJsonString type;
-};
+struct JsonString<char*> : CharPtrJsonString {};
 
 template <typename TString>
-class StlJsonString {
- public:
+struct StlJsonString {
   template <typename Buffer>
   static char* duplicate(const TString& str, Buffer* buffer) {
     if (!str.c_str()) return NULL;  // <- Arduino string can return NULL
@@ -79,26 +72,14 @@ class StlJsonString {
 
 #if ARDUINOJSON_ENABLE_ARDUINO_STRING
 template <>
-struct GetJsonString<String> {
-  typedef StlJsonString<String> type;
-};
+struct JsonString<String> : StlJsonString<String> {};
 template <>
-struct GetJsonString<StringSumHelper> {
-  typedef StlJsonString<StringSumHelper> type;
-};
+struct JsonString<StringSumHelper> : StlJsonString<StringSumHelper> {};
 #endif
 
 #if ARDUINOJSON_ENABLE_STD_STRING
 template <>
-struct GetJsonString<std::string> {
-  typedef StlJsonString<std::string> type;
-};
+struct JsonString<std::string> : StlJsonString<std::string> {};
 #endif
-
-template <typename TString>
-inline typename GetJsonString<TString>::type makeJsonString(
-    const TString& str) {
-  return typename GetJsonString<TString>::type(str);
-}
 }
 }
