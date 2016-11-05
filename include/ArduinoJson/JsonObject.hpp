@@ -14,6 +14,7 @@
 #include "Internals/ReferenceType.hpp"
 #include "Internals/ValueSetter.hpp"
 #include "JsonPair.hpp"
+#include "TypeTraits/ConstRefOrConstPtr.hpp"
 #include "TypeTraits/EnableIf.hpp"
 #include "TypeTraits/IsFloatingPoint.hpp"
 #include "TypeTraits/IsSame.hpp"
@@ -71,7 +72,7 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
   // bool set(Key, JsonVariant&);
   template <typename TValue, typename TString>
   bool set(const TString& key, const TValue& value) {
-    return setNodeAt(simplifyKeyType(key), value);
+    return setNodeAt(key, value);
   }
   // bool set(Key, float value, uint8_t decimals);
   // bool set(Key, double value, uint8_t decimals);
@@ -79,14 +80,14 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
   typename TypeTraits::EnableIf<TypeTraits::IsFloatingPoint<TValue>::value,
                                 bool>::type
   set(const TString& key, TValue value, uint8_t decimals) {
-    return setNodeAt(simplifyKeyType(key), JsonVariant(value, decimals));
+    return setNodeAt(key, JsonVariant(value, decimals));
   }
 
   // Gets the value associated with the specified key.
   template <typename TValue, typename TString>
   typename Internals::JsonVariantAs<TValue>::type get(
       const TString& key) const {
-    node_type* node = getNodeAt(simplifyKeyType(key));
+    node_type* node = getNodeAt(key);
     return node ? node->content.value.as<TValue>()
                 : JsonVariant::defaultValue<TValue>();
   }
@@ -94,7 +95,7 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
   // Checks the type of the value associated with the specified key.
   template <typename TValue, typename TString>
   bool is(const TString& key) const {
-    node_type* node = getNodeAt(simplifyKeyType(key));
+    node_type* node = getNodeAt(key);
     return node ? node->content.value.is<TValue>() : false;
   }
 
@@ -111,13 +112,13 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
   // Tells weither the specified key is present and associated with a value.
   template <typename TString>
   bool containsKey(const TString& key) const {
-    return getNodeAt(simplifyKeyType(key)) != NULL;
+    return getNodeAt(key) != NULL;
   }
 
   // Removes the specified key and the associated value.
   template <typename TString>
   void remove(const TString& key) {
-    removeNode(getNodeAt(simplifyKeyType(key)));
+    removeNode(getNodeAt(key));
   }
 
   // Returns a reference an invalid JsonObject.
@@ -132,37 +133,40 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
   // Returns the list node that matches the specified key.
   template <typename TString>
   node_type* getNodeAt(const TString& key) const {
+    // reduce the number of template function instanciation to reduce code size
+    return getNodeAtImpl<
+        typename TypeTraits::ConstRefOrConstPtr<TString>::type>(key);
+  }
+
+  template <typename TStringRef>
+  node_type* getNodeAtImpl(TStringRef key) const {
     for (node_type* node = _firstNode; node; node = node->next) {
-      if (Internals::JsonString<TString>::equals(key, node->content.key))
+      if (Internals::JsonString<TStringRef>::equals(key, node->content.key))
         return node;
     }
     return NULL;
   }
 
-  template <typename TValue, typename TString>
-  bool setNodeAt(TString key, const TValue& value) {
-    node_type* node = getNodeAt(key);
+  template <typename TString, typename TValue>
+  bool setNodeAt(const TString& key, const TValue& value) {
+    // reduce the number of template function instanciation to reduce code size
+    return setNodeAtImpl<
+        typename TypeTraits::ConstRefOrConstPtr<TString>::type>(key, value);
+  }
+
+  template <typename TStringRef, typename TValue>
+  bool setNodeAtImpl(TStringRef key, const TValue& value) {
+    node_type* node = getNodeAtImpl<TStringRef>(key);
     if (!node) {
       node = addNewNode();
       if (!node) return false;
 
-      bool key_ok =
-          Internals::ValueSetter<TString>::set(_buffer, node->content.key, key);
+      bool key_ok = Internals::ValueSetter<TStringRef>::set(
+          _buffer, node->content.key, key);
       if (!key_ok) return false;
     }
     return Internals::ValueSetter<TValue>::set(_buffer, node->content.value,
                                                value);
-  }
-
-  template <typename TString>
-  static const TString& simplifyKeyType(const TString& key) {
-    return key;
-  }
-
-  // this overload with match char[N] toon hence reducing the number of function
-  // template to generate
-  static const char* simplifyKeyType(const char* key) {
-    return key;
   }
 };
 }

@@ -23,6 +23,12 @@ namespace Internals {
 template <typename TString>
 struct JsonString {};
 
+template <typename TString>
+struct JsonString<const TString> : JsonString<TString> {};
+
+template <typename TString>
+struct JsonString<TString&> : JsonString<TString> {};
+
 struct CharPtrJsonString {
   static bool equals(const char* str, const char* expected) {
     return strcmp(str, expected) == 0;
