@@ -150,12 +150,13 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
   template <typename TString, typename TValue>
   bool setNodeAt(const TString& key, const TValue& value) {
     // reduce the number of template function instanciation to reduce code size
-    return setNodeAtImpl<
-        typename TypeTraits::ConstRefOrConstPtr<TString>::type>(key, value);
+    return setNodeAtImpl<typename TypeTraits::ConstRefOrConstPtr<TString>::type,
+                         typename TypeTraits::ConstRefOrConstPtr<TValue>::type>(
+        key, value);
   }
 
-  template <typename TStringRef, typename TValue>
-  bool setNodeAtImpl(TStringRef key, const TValue& value) {
+  template <typename TStringRef, typename TValueRef>
+  bool setNodeAtImpl(TStringRef key, TValueRef value) {
     node_type* node = getNodeAtImpl<TStringRef>(key);
     if (!node) {
       node = addNewNode();
@@ -165,8 +166,8 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
           _buffer, node->content.key, key);
       if (!key_ok) return false;
     }
-    return Internals::ValueSetter<TValue>::set(_buffer, node->content.value,
-                                               value);
+    return Internals::ValueSetter<TValueRef>::set(_buffer, node->content.value,
+                                                  value);
   }
 };
 }

@@ -14,6 +14,7 @@
 #include "Internals/StringFuncs.hpp"
 #include "Internals/ValueSetter.hpp"
 #include "JsonVariant.hpp"
+#include "TypeTraits/ConstRefOrConstPtr.hpp"
 #include "TypeTraits/EnableIf.hpp"
 #include "TypeTraits/IsFloatingPoint.hpp"
 #include "TypeTraits/IsSame.hpp"
@@ -205,19 +206,34 @@ class JsonArray : public Internals::JsonPrintable<JsonArray>,
 
   template <typename TValue>
   bool setNodeAt(size_t index, const TValue &value) {
+    // reduce the number of template function instanciation to reduce code size
+    return setNodeAtImpl<typename TypeTraits::ConstRefOrConstPtr<TValue>::type>(
+        index, value);
+  }
+
+  template <typename TValueRef>
+  bool setNodeAtImpl(size_t index, TValueRef value) {
     node_type *node = getNodeAt(index);
-    return node != NULL && setNodeValue(node, value);
+    if (!node) return false;
+
+    return Internals::ValueSetter<TValueRef>::set(_buffer, node->content,
+                                                  value);
   }
 
   template <typename TValue>
   bool addNode(const TValue &value) {
-    node_type *node = addNewNode();
-    return node != NULL && setNodeValue(node, value);
+    // reduce the number of template function instanciation to reduce code size
+    return addNodeImpl<typename TypeTraits::ConstRefOrConstPtr<TValue>::type>(
+        value);
   }
 
-  template <typename T>
-  FORCE_INLINE bool setNodeValue(node_type *node, const T &value) {
-    return Internals::ValueSetter<T>::set(_buffer, node->content, value);
+  template <typename TValueRef>
+  bool addNodeImpl(TValueRef value) {
+    node_type *node = addNewNode();
+    if (!node) return false;
+
+    return Internals::ValueSetter<TValueRef>::set(_buffer, node->content,
+                                                  value);
   }
 };
 }
