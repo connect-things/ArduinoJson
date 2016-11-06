@@ -92,7 +92,7 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
       const TString& key) const {
     node_type* node = getNodeAt(key);
     return node ? node->content.value.as<TValue>()
-                : JsonVariant::defaultValue<TValue>();
+                : Internals::JsonVariantDefault<TValue>::get();
   }
 
   // Checks the type of the value associated with the specified key.

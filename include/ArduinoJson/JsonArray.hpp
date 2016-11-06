@@ -116,7 +116,9 @@ class JsonArray : public Internals::JsonPrintable<JsonArray>,
   template <typename T>
   typename Internals::JsonVariantAs<T>::type get(size_t index) const {
     node_type *node = getNodeAt(index);
-    return node ? node->content.as<T>() : JsonVariant::defaultValue<T>();
+    return node ? node->content.as<T>()
+                : Internals::JsonVariantDefault<T>::get();
+    ;
   }
 
   // Check the type of the value at specified index.

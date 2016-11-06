@@ -305,12 +305,6 @@ class JsonVariant : public JsonVariantBase<JsonVariant> {
     return _type != Internals::JSON_UNDEFINED;
   }
 
-  // Value returned if the variant has an incompatible type
-  template <typename T>
-  static typename Internals::JsonVariantAs<T>::type defaultValue() {
-    return Internals::JsonVariantDefault<T>::get();
-  }
-
   // DEPRECATED: use as<char*>() instead
   const char *asString() const;
 
