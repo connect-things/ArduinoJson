@@ -76,13 +76,14 @@ class JsonArray : public Internals::JsonPrintable<JsonArray>,
   // bool add(JsonObject&);
   template <typename T>
   bool add(const T &value) {
-    return addNode(value);
+    // reduce the number of template function instanciation to reduce code size
+    return addNodeImpl<typename TypeTraits::ConstRefOrConstPtr<T>::type>(value);
   }
   // bool add(float value, uint8_t decimals);
   // bool add(double value, uint8_t decimals);
   template <typename T>
   bool add(T value, uint8_t decimals) {
-    return addNode(JsonVariant(value, decimals));
+    return add(JsonVariant(value, decimals));
   }
 
   // Sets the value at specified index.
@@ -98,7 +99,9 @@ class JsonArray : public Internals::JsonPrintable<JsonArray>,
   // bool set(size_t index, JsonObject&);
   template <typename T>
   bool set(size_t index, const T &value) {
-    return setNodeAt(index, value);
+    // reduce the number of template function instanciation to reduce code size
+    return setNodeAtImpl<typename TypeTraits::ConstRefOrConstPtr<T>::type>(
+        index, value);
   }
   // bool set(size_t index, float value, uint8_t decimals = 2);
   // bool set(size_t index, double value, uint8_t decimals = 2);
@@ -106,7 +109,7 @@ class JsonArray : public Internals::JsonPrintable<JsonArray>,
   typename TypeTraits::EnableIf<TypeTraits::IsFloatingPoint<T>::value,
                                 bool>::type
   set(size_t index, T value, uint8_t decimals) {
-    return setNodeAt(index, JsonVariant(value, decimals));
+    return set(index, JsonVariant(value, decimals));
   }
 
   // Gets the value at the specified index.
@@ -204,13 +207,6 @@ class JsonArray : public Internals::JsonPrintable<JsonArray>,
     return node;
   }
 
-  template <typename TValue>
-  bool setNodeAt(size_t index, const TValue &value) {
-    // reduce the number of template function instanciation to reduce code size
-    return setNodeAtImpl<typename TypeTraits::ConstRefOrConstPtr<TValue>::type>(
-        index, value);
-  }
-
   template <typename TValueRef>
   bool setNodeAtImpl(size_t index, TValueRef value) {
     node_type *node = getNodeAt(index);
@@ -218,13 +214,6 @@ class JsonArray : public Internals::JsonPrintable<JsonArray>,
 
     return Internals::ValueSetter<TValueRef>::set(_buffer, node->content,
                                                   value);
-  }
-
-  template <typename TValue>
-  bool addNode(const TValue &value) {
-    // reduce the number of template function instanciation to reduce code size
-    return addNodeImpl<typename TypeTraits::ConstRefOrConstPtr<TValue>::type>(
-        value);
   }
 
   template <typename TValueRef>
