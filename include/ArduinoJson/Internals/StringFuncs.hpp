@@ -53,6 +53,9 @@ struct StringFuncs<const char*> : CharPtrFuncs {};
 template <>
 struct StringFuncs<char*> : CharPtrFuncs {};
 
+template <size_t N>
+struct StringFuncs<char[N]> : CharPtrFuncs {};
+
 template <typename TString>
 struct StdStringFuncs {
   template <typename Buffer>

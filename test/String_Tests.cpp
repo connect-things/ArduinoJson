@@ -8,7 +8,7 @@
 #include <ArduinoJson.h>
 #include <gtest/gtest.h>
 
-class ArduinoStringTests : public ::testing::Test {
+class StringTests : public ::testing::Test {
  protected:
   static void eraseString(std::string &str) {
     char *p = const_cast<char *>(str.c_str());
@@ -18,7 +18,7 @@ class ArduinoStringTests : public ::testing::Test {
   DynamicJsonBuffer _jsonBuffer;
 };
 
-TEST_F(ArduinoStringTests, JsonBuffer_ParseArray) {
+TEST_F(StringTests, JsonBuffer_ParseArray) {
   std::string json("[\"hello\"]");
   JsonArray &array = _jsonBuffer.parseArray(json);
   eraseString(json);
@@ -26,7 +26,7 @@ TEST_F(ArduinoStringTests, JsonBuffer_ParseArray) {
   ASSERT_STREQ("hello", array[0]);
 }
 
-TEST_F(ArduinoStringTests, JsonBuffer_ParseObject) {
+TEST_F(StringTests, JsonBuffer_ParseObject) {
   std::string json("{\"hello\":\"world\"}");
   JsonObject &object = _jsonBuffer.parseObject(json);
   eraseString(json);
@@ -34,19 +34,19 @@ TEST_F(ArduinoStringTests, JsonBuffer_ParseObject) {
   ASSERT_STREQ("world", object["hello"]);
 }
 
-TEST_F(ArduinoStringTests, JsonObject_Subscript) {
+TEST_F(StringTests, JsonObject_Subscript) {
   char json[] = "{\"key\":\"value\"}";
   JsonObject &object = _jsonBuffer.parseObject(json);
   ASSERT_STREQ("value", object[std::string("key")]);
 }
 
-TEST_F(ArduinoStringTests, JsonObject_ConstSubscript) {
+TEST_F(StringTests, JsonObject_ConstSubscript) {
   char json[] = "{\"key\":\"value\"}";
   const JsonObject &object = _jsonBuffer.parseObject(json);
   ASSERT_STREQ("value", object[std::string("key")]);
 }
 
-TEST_F(ArduinoStringTests, JsonObject_SetKey) {
+TEST_F(StringTests, JsonObject_SetKey) {
   JsonObject &object = _jsonBuffer.createObject();
   std::string key("hello");
   object.set(key, "world");
@@ -54,7 +54,7 @@ TEST_F(ArduinoStringTests, JsonObject_SetKey) {
   ASSERT_STREQ("world", object["hello"]);
 }
 
-TEST_F(ArduinoStringTests, JsonObject_SetValue) {
+TEST_F(StringTests, JsonObject_SetValue) {
   JsonObject &object = _jsonBuffer.createObject();
   std::string value("world");
   object.set("hello", value);
@@ -62,7 +62,7 @@ TEST_F(ArduinoStringTests, JsonObject_SetValue) {
   ASSERT_STREQ("world", object["hello"]);
 }
 
-TEST_F(ArduinoStringTests, JsonObject_SetKeyValue) {
+TEST_F(StringTests, JsonObject_SetKeyValue) {
   JsonObject &object = _jsonBuffer.createObject();
   std::string key("hello");
   std::string value("world");
@@ -72,7 +72,7 @@ TEST_F(ArduinoStringTests, JsonObject_SetKeyValue) {
   ASSERT_STREQ("world", object["hello"]);
 }
 
-TEST_F(ArduinoStringTests, JsonObject_SetToArraySubscript) {
+TEST_F(StringTests, JsonObject_SetToArraySubscript) {
   JsonArray &arr = _jsonBuffer.createArray();
   arr.add("world");
 
@@ -82,7 +82,7 @@ TEST_F(ArduinoStringTests, JsonObject_SetToArraySubscript) {
   ASSERT_STREQ("world", object["hello"]);
 }
 
-TEST_F(ArduinoStringTests, JsonObject_SetToObjectSubscript) {
+TEST_F(StringTests, JsonObject_SetToObjectSubscript) {
   JsonObject &arr = _jsonBuffer.createObject();
   arr.set("x", "world");
 
@@ -92,25 +92,25 @@ TEST_F(ArduinoStringTests, JsonObject_SetToObjectSubscript) {
   ASSERT_STREQ("world", object["hello"]);
 }
 
-TEST_F(ArduinoStringTests, JsonObject_Get) {
+TEST_F(StringTests, JsonObject_Get) {
   char json[] = "{\"key\":\"value\"}";
   const JsonObject &object = _jsonBuffer.parseObject(json);
   ASSERT_STREQ("value", object.get<const char *>(std::string("key")));
 }
 
-TEST_F(ArduinoStringTests, JsonObject_GetT) {
+TEST_F(StringTests, JsonObject_GetT) {
   char json[] = "{\"key\":\"value\"}";
   const JsonObject &object = _jsonBuffer.parseObject(json);
   ASSERT_STREQ("value", object.get<const char *>(std::string("key")));
 }
 
-TEST_F(ArduinoStringTests, JsonObject_IsT) {
+TEST_F(StringTests, JsonObject_IsT) {
   char json[] = "{\"key\":\"value\"}";
   const JsonObject &object = _jsonBuffer.parseObject(json);
   ASSERT_TRUE(object.is<const char *>(std::string("key")));
 }
 
-TEST_F(ArduinoStringTests, JsonObject_CreateNestedObject) {
+TEST_F(StringTests, JsonObject_CreateNestedObject) {
   std::string key = "key";
   char json[64];
   JsonObject &object = _jsonBuffer.createObject();
@@ -120,7 +120,7 @@ TEST_F(ArduinoStringTests, JsonObject_CreateNestedObject) {
   ASSERT_STREQ("{\"key\":{}}", json);
 }
 
-TEST_F(ArduinoStringTests, JsonObject_CreateNestedArray) {
+TEST_F(StringTests, JsonObject_CreateNestedArray) {
   std::string key = "key";
   char json[64];
   JsonObject &object = _jsonBuffer.createObject();
@@ -130,13 +130,13 @@ TEST_F(ArduinoStringTests, JsonObject_CreateNestedArray) {
   ASSERT_STREQ("{\"key\":[]}", json);
 }
 
-TEST_F(ArduinoStringTests, JsonObject_ContainsKey) {
+TEST_F(StringTests, JsonObject_ContainsKey) {
   char json[] = "{\"key\":\"value\"}";
   const JsonObject &object = _jsonBuffer.parseObject(json);
   ASSERT_TRUE(object.containsKey(std::string("key")));
 }
 
-TEST_F(ArduinoStringTests, JsonObject_Remove) {
+TEST_F(StringTests, JsonObject_Remove) {
   char json[] = "{\"key\":\"value\"}";
   JsonObject &object = _jsonBuffer.parseObject(json);
   ASSERT_EQ(1, object.size());
@@ -144,7 +144,7 @@ TEST_F(ArduinoStringTests, JsonObject_Remove) {
   ASSERT_EQ(0, object.size());
 }
 
-TEST_F(ArduinoStringTests, JsonObjectSubscript_SetKey) {
+TEST_F(StringTests, JsonObjectSubscript_SetKey) {
   JsonObject &object = _jsonBuffer.createObject();
   std::string key("hello");
   object[key] = "world";
@@ -152,7 +152,7 @@ TEST_F(ArduinoStringTests, JsonObjectSubscript_SetKey) {
   ASSERT_STREQ("world", object["hello"]);
 }
 
-TEST_F(ArduinoStringTests, JsonObjectSubscript_SetValue) {
+TEST_F(StringTests, JsonObjectSubscript_SetValue) {
   JsonObject &object = _jsonBuffer.createObject();
   std::string value("world");
   object["hello"] = value;
@@ -160,7 +160,7 @@ TEST_F(ArduinoStringTests, JsonObjectSubscript_SetValue) {
   ASSERT_STREQ("world", object["hello"]);
 }
 
-TEST_F(ArduinoStringTests, JsonArray_Add) {
+TEST_F(StringTests, JsonArray_Add) {
   JsonArray &array = _jsonBuffer.createArray();
   std::string value("hello");
   array.add(value);
@@ -168,7 +168,7 @@ TEST_F(ArduinoStringTests, JsonArray_Add) {
   ASSERT_STREQ("hello", array[0]);
 }
 
-TEST_F(ArduinoStringTests, JsonArray_Set) {
+TEST_F(StringTests, JsonArray_Set) {
   JsonArray &array = _jsonBuffer.createArray();
   std::string value("world");
   array.add("hello");
@@ -177,7 +177,7 @@ TEST_F(ArduinoStringTests, JsonArray_Set) {
   ASSERT_STREQ("world", array[0]);
 }
 
-TEST_F(ArduinoStringTests, JsonArraySubscript) {
+TEST_F(StringTests, JsonArraySubscript) {
   JsonArray &array = _jsonBuffer.createArray();
   std::string value("world");
   array.add("hello");
@@ -186,7 +186,7 @@ TEST_F(ArduinoStringTests, JsonArraySubscript) {
   ASSERT_STREQ("world", array[0]);
 }
 
-TEST_F(ArduinoStringTests, JsonArray_PrintTo) {
+TEST_F(StringTests, JsonArray_PrintTo) {
   JsonArray &array = _jsonBuffer.createArray();
   array.add(4);
   array.add(2);
@@ -195,7 +195,7 @@ TEST_F(ArduinoStringTests, JsonArray_PrintTo) {
   ASSERT_EQ(std::string("[4,2]"), json);
 }
 
-TEST_F(ArduinoStringTests, JsonArray_PrettyPrintTo) {
+TEST_F(StringTests, JsonArray_PrettyPrintTo) {
   JsonArray &array = _jsonBuffer.createArray();
   array.add(4);
   array.add(2);
@@ -204,7 +204,7 @@ TEST_F(ArduinoStringTests, JsonArray_PrettyPrintTo) {
   ASSERT_EQ(std::string("[\r\n  4,\r\n  2\r\n]"), json);
 }
 
-TEST_F(ArduinoStringTests, JsonObject_PrintTo) {
+TEST_F(StringTests, JsonObject_PrintTo) {
   JsonObject &object = _jsonBuffer.createObject();
   object["key"] = "value";
   std::string json;
@@ -212,7 +212,7 @@ TEST_F(ArduinoStringTests, JsonObject_PrintTo) {
   ASSERT_EQ(std::string("{\"key\":\"value\"}"), json);
 }
 
-TEST_F(ArduinoStringTests, JsonObject_PrettyPrintTo) {
+TEST_F(StringTests, JsonObject_PrettyPrintTo) {
   JsonObject &object = _jsonBuffer.createObject();
   object["key"] = "value";
   std::string json;
@@ -220,7 +220,7 @@ TEST_F(ArduinoStringTests, JsonObject_PrettyPrintTo) {
   ASSERT_EQ(std::string("{\r\n  \"key\": \"value\"\r\n}"), json);
 }
 
-TEST_F(ArduinoStringTests, JsonBuffer_GrowWhenAddingNewKey) {
+TEST_F(StringTests, JsonBuffer_GrowWhenAddingNewKey) {
   JsonObject &object = _jsonBuffer.createObject();
   std::string key1("hello"), key2("world");
 
@@ -232,7 +232,7 @@ TEST_F(ArduinoStringTests, JsonBuffer_GrowWhenAddingNewKey) {
   ASSERT_GT(sizeAfter - sizeBefore, key2.size());
 }
 
-TEST_F(ArduinoStringTests, JsonBuffer_DontGrowWhenReusingKey) {
+TEST_F(StringTests, JsonBuffer_DontGrowWhenReusingKey) {
   JsonObject &object = _jsonBuffer.createObject();
   std::string key("hello");
 
@@ -242,4 +242,11 @@ TEST_F(ArduinoStringTests, JsonBuffer_DontGrowWhenReusingKey) {
   size_t sizeAfter = _jsonBuffer.size();
 
   ASSERT_EQ(sizeBefore, sizeAfter);
+}
+
+TEST_F(StringTests, JsonBuffer_strdup) {
+  std::string original("hello");
+  char *copy = _jsonBuffer.strdup(original);
+  original[0] = 'w';
+  ASSERT_STREQ("hello", copy);
 }
