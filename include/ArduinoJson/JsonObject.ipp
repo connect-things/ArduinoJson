@@ -41,9 +41,9 @@ inline JsonObject &JsonVariant::asObject() const {
 template <typename TString>
 inline JsonObject &JsonObject::createNestedObject(const TString &key) {
   if (!_buffer) return JsonObject::invalid();
-  JsonObject &array = _buffer->createObject();
-  setNodeAt(key, array);
-  return array;
+  JsonObject &object = _buffer->createObject();
+  set(key, object);
+  return object;
 }
 
 inline JsonObject &JsonArray::createNestedObject() {

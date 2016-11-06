@@ -72,7 +72,10 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
   // bool set(Key, JsonVariant&);
   template <typename TValue, typename TString>
   bool set(const TString& key, const TValue& value) {
-    return setNodeAt(key, value);
+    // reduce the number of template function instanciation to reduce code size
+    return setNodeAtImpl<typename TypeTraits::ConstRefOrConstPtr<TString>::type,
+                         typename TypeTraits::ConstRefOrConstPtr<TValue>::type>(
+        key, value);
   }
   // bool set(Key, float value, uint8_t decimals);
   // bool set(Key, double value, uint8_t decimals);
@@ -80,7 +83,7 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
   typename TypeTraits::EnableIf<TypeTraits::IsFloatingPoint<TValue>::value,
                                 bool>::type
   set(const TString& key, TValue value, uint8_t decimals) {
-    return setNodeAt(key, JsonVariant(value, decimals));
+    return set(key, JsonVariant(value, decimals));
   }
 
   // Gets the value associated with the specified key.
@@ -145,14 +148,6 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
         return node;
     }
     return NULL;
-  }
-
-  template <typename TString, typename TValue>
-  bool setNodeAt(const TString& key, const TValue& value) {
-    // reduce the number of template function instanciation to reduce code size
-    return setNodeAtImpl<typename TypeTraits::ConstRefOrConstPtr<TString>::type,
-                         typename TypeTraits::ConstRefOrConstPtr<TValue>::type>(
-        key, value);
   }
 
   template <typename TStringRef, typename TValueRef>
