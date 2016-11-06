@@ -73,8 +73,8 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
   template <typename TValue, typename TString>
   bool set(const TString& key, const TValue& value) {
     // reduce the number of template function instanciation to reduce code size
-    return setNodeAtImpl<typename TypeTraits::ConstRefOrConstPtr<TString>::type,
-                         typename TypeTraits::ConstRefOrConstPtr<TValue>::type>(
+    return setNodeAt<typename TypeTraits::ConstRefOrConstPtr<TString>::type,
+                     typename TypeTraits::ConstRefOrConstPtr<TValue>::type>(
         key, value);
   }
   // bool set(Key, float value, uint8_t decimals);
@@ -151,7 +151,7 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
   }
 
   template <typename TStringRef, typename TValueRef>
-  bool setNodeAtImpl(TStringRef key, TValueRef value) {
+  bool setNodeAt(TStringRef key, TValueRef value) {
     node_type* node = getNodeAtImpl<TStringRef>(key);
     if (!node) {
       node = addNewNode();

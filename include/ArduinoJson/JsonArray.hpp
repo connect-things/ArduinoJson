@@ -100,8 +100,8 @@ class JsonArray : public Internals::JsonPrintable<JsonArray>,
   template <typename T>
   bool set(size_t index, const T &value) {
     // reduce the number of template function instanciation to reduce code size
-    return setNodeAtImpl<typename TypeTraits::ConstRefOrConstPtr<T>::type>(
-        index, value);
+    return setNodeAt<typename TypeTraits::ConstRefOrConstPtr<T>::type>(index,
+                                                                       value);
   }
   // bool set(size_t index, float value, uint8_t decimals = 2);
   // bool set(size_t index, double value, uint8_t decimals = 2);
@@ -208,7 +208,7 @@ class JsonArray : public Internals::JsonPrintable<JsonArray>,
   }
 
   template <typename TValueRef>
-  bool setNodeAtImpl(size_t index, TValueRef value) {
+  bool setNodeAt(size_t index, TValueRef value) {
     node_type *node = getNodeAt(index);
     if (!node) return false;
 
