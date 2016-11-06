@@ -31,24 +31,13 @@ inline JsonVariant::JsonVariant(const JsonObject &object) {
   }
 }
 
+namespace Internals {
 template <>
-inline JsonArray &JsonVariant::defaultValue<JsonArray>() {
-  return JsonArray::invalid();
-}
-
-template <>
-inline JsonArray &JsonVariant::defaultValue<JsonArray &>() {
-  return JsonArray::invalid();
-}
-
-template <>
-inline const JsonArray &JsonVariant::defaultValue<const JsonArray>() {
-  return JsonArray::invalid();
-}
-
-template <>
-inline const JsonArray &JsonVariant::defaultValue<const JsonArray &>() {
-  return JsonArray::invalid();
+struct JsonVariantDefault<JsonArray> {
+  static JsonArray &get() {
+    return JsonArray::invalid();
+  }
+};
 }
 
 inline JsonArray &JsonVariant::asArray() const {

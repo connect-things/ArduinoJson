@@ -12,6 +12,7 @@
 
 #include "Internals/JsonPrintable.hpp"
 #include "Internals/JsonVariantContent.hpp"
+#include "Internals/JsonVariantDefault.hpp"
 #include "Internals/JsonVariantType.hpp"
 #include "JsonVariantBase.hpp"
 #include "RawJson.hpp"
@@ -307,7 +308,7 @@ class JsonVariant : public JsonVariantBase<JsonVariant> {
   // Value returned if the variant has an incompatible type
   template <typename T>
   static typename Internals::JsonVariantAs<T>::type defaultValue() {
-    return T();
+    return Internals::JsonVariantDefault<T>::get();
   }
 
   // DEPRECATED: use as<char*>() instead

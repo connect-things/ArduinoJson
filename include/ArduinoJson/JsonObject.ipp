@@ -13,24 +13,13 @@
 
 namespace ArduinoJson {
 
+namespace Internals {
 template <>
-inline const JsonObject &JsonVariant::defaultValue<const JsonObject &>() {
-  return JsonObject::invalid();
-}
-
-template <>
-inline const JsonObject &JsonVariant::defaultValue<const JsonObject>() {
-  return JsonObject::invalid();
-}
-
-template <>
-inline JsonObject &JsonVariant::defaultValue<JsonObject &>() {
-  return JsonObject::invalid();
-}
-
-template <>
-inline JsonObject &JsonVariant::defaultValue<JsonObject>() {
-  return JsonObject::invalid();
+struct JsonVariantDefault<JsonObject> {
+  static JsonObject &get() {
+    return JsonObject::invalid();
+  }
+};
 }
 
 inline JsonObject &JsonVariant::asObject() const {
